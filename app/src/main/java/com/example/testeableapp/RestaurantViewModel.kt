@@ -33,15 +33,15 @@ class RestaurantViewModel : ViewModel() {
 
     val orderedItems: StateFlow<List<MenuItem>> = _quantities
         .map { q -> MenuData.items.filter { (q[it.id] ?: 0) > 0 } }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val total: StateFlow<Double> = _quantities
         .map { q -> q.entries.sumOf { (id, qty) -> (MenuData.items.find { it.id == id }?.price ?: 0.0) * qty } }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
 
     val isEmpty: StateFlow<Boolean> = _quantities
         .map { it.isEmpty() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     private val _confirmation = MutableStateFlow<OrderConfirmation?>(null)
     val confirmation: StateFlow<OrderConfirmation?> = _confirmation.asStateFlow()
@@ -56,7 +56,7 @@ class RestaurantViewModel : ViewModel() {
             isEmpty = isEmpty,
             confirmation = confirmation
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), OrderUiState())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, OrderUiState())
 
     fun addItem(itemId: Int) {
         _quantities.update { current ->
